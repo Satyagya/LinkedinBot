@@ -1,7 +1,4 @@
 linkJobUrl = "https://www.linkedin.com/jobs/search/"
-angelCoUrl = "https://angel.co/login"
-globalLogicUrl = "https://www.globallogic.com/career-search-page/"
-
 jobsPerPage = 25
 
 fast = 2

@@ -8,8 +8,8 @@ from utils import prRed,prYellow,prGreen
 
 from selenium.webdriver.firefox.service import Service
 from selenium.webdriver.firefox.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
+from config import filter_words, target_words
 
 class Linkedin:
     def __init__(self):
@@ -22,7 +22,9 @@ class Linkedin:
                     prYellow("On Linux you need to define profile path to run the bot with Firefox. Go about:profiles find root directory of your profile paste in line 8 of config file next to firefoxProfileRootDir ")
                     exit()
                 else: 
-                    self.driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+                    service = Service(executable_path=GeckoDriverManager().install())
+                    self.driver = webdriver.Firefox(service=service)
+                    # self.driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
                     self.driver.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
                     prYellow("Trying to log in linkedin.")
                     try:    
@@ -34,23 +36,7 @@ class Linkedin:
                         prRed(e)
             else:
                 self.driver = webdriver.Firefox(options=utils.browserOptions(),service=Service(executable_path=GeckoDriverManager().install()))
-        elif (browser == "chrome"):
-            self.driver = webdriver.Chrome(ChromeDriverManager().install())
-            self.driver.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
-            prYellow("Trying to log in linkedin.")
-            try:    
-                self.driver.find_element("id","username").send_keys(linkedinEmail)
-                time.sleep(5)
-                self.driver.find_element("id","password").send_keys(config.password)
-                time.sleep(5)
-                self.driver.find_element("xpath",'//*[@id="organic-div"]/form/div[3]/button').click()
-            except:
-                prRed("Couldnt log in Linkedin by using chrome please try again for Firefox by creating a firefox profile.")
-
-        # driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()))
-        # webdriver.Chrome(ChromeDriverManager().install())
-        # webdriver.Firefox(options=utils.browserOptions())
-    
+        
     def generateUrls(self):
         if not os.path.exists('data'):
             os.makedirs('data')
@@ -71,6 +57,7 @@ class Linkedin:
         urlData = utils.getUrlDataFile()
 
         for url in urlData:        
+            time.sleep(random.uniform(10, constants.botSpeed))
             self.driver.get(url)
 
             totalJobs = self.driver.find_element(By.XPATH,'//small').text 
@@ -84,7 +71,8 @@ class Linkedin:
                 currentPageJobs = constants.jobsPerPage * page
                 url = url +"&start="+ str(currentPageJobs)
                 self.driver.get(url)
-                time.sleep(random.uniform(1, constants.botSpeed))
+                time.sleep(random.uniform(10, constants.botSpeed))
+                
 
                 offersPerPage = self.driver.find_elements(By.XPATH,'//li[@data-occludable-job-id]')
 
@@ -101,6 +89,10 @@ class Linkedin:
                     countJobs += 1
 
                     jobProperties = self.getJobProperties(countJobs) 
+                    if any(word.lower() in jobProperties.lower() for word in filter_words):
+                        continue
+                    if not any(target_word.lower() in jobProperties.lower() for target_word in target_words):
+                        continue
                     
                     button = self.easyApplyButton()
 
@@ -244,4 +236,4 @@ while True:
         # close firefox driver
         end = time.time()
         prYellow("---Took: " + str(round((time.time() - start)/60)) + " minute(s).")
-        Linkedin().driver.quit()
+        # Linkedin().driver.quit()

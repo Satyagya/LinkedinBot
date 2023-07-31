@@ -92,20 +92,20 @@ def printInfoMes(bot:str):
     prYellow("ℹ️ " +bot+ " is starting soon... ")
 
 def donate(self):
-    prYellow('If you like the project, please support me so that i can make more such projects, thanks!')
     try:
-        self.driver.get('https://commerce.coinbase.com/checkout/576ee011-ba40-47d5-9672-ef7ad29b1e6c')
+        self.driver.get('https://www.youtube.com/watch?v=dQw4w9WgXcQ')
     except Exception as e:
-        prRed("Error in donate: " +str(e))
+        prRed("Error in vibes: " +str(e))
 
 class LinkedinUrlGenerate:
     def generateUrlLinks(self):
         path = []
         for location in config.location:
             for keyword in config.keywords:
-                    url = constants.linkJobUrl + "?f_AL=true&keywords=" +keyword+self.jobType()+self.remote()+self.checkJobLocation(location)+self.jobExp()+self.datePosted()+self.salary()+self.sortBy()
+                    url = constants.linkJobUrl + "?f_AL=false&keywords=" +keyword+self.jobType()+self.remote()+self.checkJobLocation(location)+self.jobExp()+self.datePosted()+self.salary()+self.sortBy()
                     path.append(url)
         return path
+    # f_AL is for easyApply
 
     def checkJobLocation(self,job):
         jobLoc = "&location=" +job
